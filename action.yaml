@@ -42,4 +42,7 @@ runs:
         echo $GOOGLE_CREDENTIALS | base64 -d > "${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}"
     - name: Run remediation
       shell: bash
-      run: /accuknox-cdr/entrypoint.sh
+      run: |
+        pushd /accuknox-cdr
+        ./entrypoint.sh
+        popd
