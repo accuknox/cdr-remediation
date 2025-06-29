@@ -29,7 +29,7 @@ runs:
       shell: bash
       run: |
         if [[ ! -n "${{ inputs.AWS_ACCESS_KEY_ID }}" && ! -n "${{ inputs.GOOGLE_CREDENTIALS }}" ]]; then
-          echo "No cloud account was configured"
+          echo "No cloud accounts were configured"
           echo "Aborting..."
           exit 1
         fi
@@ -39,7 +39,7 @@ runs:
       shell: bash
       run: |
         echo "Configuring GCP connection"
-        echo $GOOGLE_CREDENTIALS | base64 -d > "${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}"
+        echo ${{ inputs.GOOGLE_CREDENTIALS }} | base64 -d > "${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}"
     - name: Run remediation
       shell: bash
       run: |
