@@ -1,0 +1,45 @@
+name: AccuKnox CDR remediation 
+description: Run AccuKnox CDR remediation steps
+inputs:
+  AWS_ACCESS_KEY_ID:
+    description: AWS access key ID
+    required: false
+    default: ""
+  AWS_SECRET_ACCESS_KEY:
+    description: AWS secret access key
+    required: false
+    default: ""
+  GOOGLE_CREDENTIALS:
+    description: GCP service account key
+    required: false
+    default: ""
+  GOOGLE_APPLICATION_CREDENTIALS:
+    description: GCP service account key file path
+    required: false
+    default: /gcp-keys.json
+  CLIENT_PAYLOAD:
+    description: Client payload as recived by github webhook
+    required: false
+    default: ${{ toJSON(github.event.client_payload) }}
+  
+runs:
+  using: "composite"
+  steps:
+    - name: Check if at least one cloud account connection is configured
+      shell: bash
+      run: |
+        if [[ ! -n "${{ inputs.AWS_ACCESS_KEY_ID }}" && ! -n "${{ inputs.GOOGLE_CREDENTIALS }}" ]]; then
+          echo "No cloud account was configured"
+          echo "Aborting..."
+          exit 1
+        fi
+        echo "At least one cloud account is configured"
+    - name: GCP login
+      if: ${{ inputs.GOOGLE_CREDENTIALS != ''}}
+      shell: bash
+      run: |
+        echo "Configuring GCP connection"
+        echo $GOOGLE_CREDENTIALS | base64 -d > "${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}"
+    - name: Run remediation
+      shell: bash
+      run: /accuknox-cdr/entrypoint.sh
