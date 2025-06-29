@@ -34,12 +34,22 @@ runs:
           exit 1
         fi
         echo "At least one cloud account is configured"
+
     - name: GCP login
       if: ${{ inputs.GOOGLE_CREDENTIALS != ''}}
       shell: bash
       run: |
         echo "Configuring GCP connection"
         echo ${{ inputs.GOOGLE_CREDENTIALS }} | base64 -d > "${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}"
+
+    - name: AWS login
+      if: ${{ inputs.AWS_ACCESS_KEY_ID != ''}}
+      shell: bash
+      run: |
+        echo "Configuring AWS connection"
+        echo "AWS_ACCESS_KEY_ID=${{ inputs.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+        echo "AWS_SECRET_ACCESS_KEY=${{ inputs.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+
     - name: Run remediation
       shell: bash
       run: |
