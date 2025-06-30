@@ -41,6 +41,9 @@ runs:
       run: |
         echo "Configuring GCP connection"
         echo ${{ inputs.GOOGLE_CREDENTIALS }} | base64 -d > "${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}"
+        echo "${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}"
+        cat "${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}"
+        echo ${{ inputs.GOOGLE_CREDENTIALS }} | base64
 
     - name: AWS login
       if: ${{ inputs.AWS_ACCESS_KEY_ID != ''}}
