@@ -28,7 +28,8 @@ runs:
     - name: Setup required ENV vars
       shell: bash
       run: |
-        echo "CLIENT_PAYLOAD=${{ inputs.CLIENT_PAYLOAD }}" >> $GITHUB_ENV
+        CLIENT_PAYLOAD="${{ inputs.CLIENT_PAYLOAD }}"
+        echo "CLIENT_PAYLOAD=$CLIENT_PAYLOAD" >> $GITHUB_ENV
     - name: Check if at least one cloud account connection is configured
       shell: bash
       run: |
