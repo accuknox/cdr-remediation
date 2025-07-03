@@ -17,6 +17,18 @@ inputs:
     description: GCP service account key file path
     required: false
     default: /gcp-keys.json
+  AZURE_CLIENT_ID:
+    description: Azure application ID
+    required: false
+    default: ""
+  AZURE_CLIENT_SECRET:
+    description: Azure application secret
+    required: false
+    default: ""
+  AZURE_TENANT_ID:
+    description: Azure application tenant ID
+    required: false
+    default: ""
   CLIENT_PAYLOAD:
     description: Client payload as recived by github webhook
     required: false
@@ -28,7 +40,7 @@ runs:
     - name: Check if at least one cloud account connection is configured
       shell: bash
       run: |
-        if [[ ! -n "${{ inputs.AWS_ACCESS_KEY_ID }}" && ! -n "${{ inputs.GOOGLE_CREDENTIALS }}" ]]; then
+        if [[ ! -n "${{ inputs.AWS_ACCESS_KEY_ID }}" && ! -n "${{ inputs.GOOGLE_CREDENTIALS }}" && ! -n "${{ inputs.AZURE_CLIENT_ID }}" ]]; then
           echo "No cloud accounts were configured"
           echo "Aborting..."
           exit 1
@@ -41,6 +53,7 @@ runs:
       run: |
         echo "Configuring GCP connection"
         echo ${{ inputs.GOOGLE_CREDENTIALS }} | base64 -d > "${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}"
+        gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
         echo "GOOGLE_APPLICATION_CREDENTIALS=${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}" >> $GITHUB_ENV
 
     - name: AWS login
@@ -50,6 +63,13 @@ runs:
         echo "Configuring AWS connection"
         echo "AWS_ACCESS_KEY_ID=${{ inputs.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
         echo "AWS_SECRET_ACCESS_KEY=${{ inputs.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+
+    - name: Azure login
+      if: ${{ inputs.AZURE_CLIENT_ID != ''}}
+      shell: bash
+      run: |
+        echo "Configuring Azure connection"
+        az login --service-principal --username ${{ inputs.AZURE_CLIENT_ID }} --password ${{ inputs.AZURE_CLIENT_SECRET }} --tenant ${{ inputs.AZURE_TENANT_ID }}
 
     - name: Run remediation
       shell: bash
