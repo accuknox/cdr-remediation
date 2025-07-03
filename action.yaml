@@ -53,7 +53,7 @@ runs:
       run: |
         echo "Configuring GCP connection"
         echo ${{ inputs.GOOGLE_CREDENTIALS }} | base64 -d > "${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}"
-        gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+        gcloud auth activate-service-account --key-file="${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}"
         echo "GOOGLE_APPLICATION_CREDENTIALS=${{ inputs.GOOGLE_APPLICATION_CREDENTIALS }}" >> $GITHUB_ENV
 
     - name: AWS login
